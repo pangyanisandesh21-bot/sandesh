@@ -1,0 +1,26 @@
+section div{
+    padding: 30px;
+    background-color: rgb(12, 132, 236);
+    font-size: 50px;
+    margin: 150px;
+    height: 100px;
+    color: yellow;
+
+}
+section{
+    height: 400px;
+    background-color: yellow;
+    display : flex;
+    flex-direction:row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    gap: 30px;
+
+}
+section div:nth-child(1){
+    background-color: red;
+}
+section div:nth-child(2){
+    background-color: black;
+}
