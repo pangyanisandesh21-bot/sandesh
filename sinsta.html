@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sinsta</title>
+
+<style>
+body { font-family: Arial; margin:0; background:#fafafa; }
+
+/* auth */
+.auth-box {
+  width:300px; margin:100px auto; text-align:center;
+  background:white; padding:20px;
+}
+
+/* navbar */
+.navbar {
+  display:flex; justify-content:space-between;
+  background:white; padding:10px;
+}
+
+/* layout */
+.container { display:flex; }
+.sidebar { width:20%; padding:20px; }
+.feed { width:80%; padding:20px; }
+
+/* post */
+.post { background:white; padding:10px; margin-bottom:10px; }
+.post img { width:100%; }
+
+/* hide */
+.hidden { display:none; }
+</style>
+
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="auth-box">
+  <h2>Sinsta</h2>
+  <input id="loginUser" placeholder="Username"><br><br>
+  <input id="loginPass" type="password" placeholder="Password"><br><br>
+  <button onclick="login()">Login</button>
+  <p onclick="showSignup()" style="cursor:pointer;">Sign up</p>
+</div>
+
+<!-- SIGNUP -->
+<div id="signupPage" class="auth-box hidden">
+  <h2>Create Account</h2>
+  <input id="newUser" placeholder="Username"><br><br>
+  <input id="newPass" type="password" placeholder="Password"><br><br>
+  <button onclick="signup()">Sign Up</button>
+  <p onclick="showLogin()" style="cursor:pointer;">Back to Login</p>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainPage" class="hidden">
+
+  <div class="navbar">
+    <h2>Sinsta</h2>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div class="container">
+
+    <!-- sidebar -->
+    <div class="sidebar">
+      <p onclick="showFeed()">🏠 Home</p>
+      <p onclick="showProfile()">👤 Profile</p>
+    </div>
+
+    <!-- FEED -->
+    <div id="feedPage" class="feed">
+      
+      <div class="post">
+        <input id="postText" placeholder="Write something..."><br><br>
+        <input id="imgUrl" placeholder="Image URL"><br><br>
+        <button onclick="addPost()">Post</button>
+      </div>
+
+      <div id="posts"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="profilePage" class="feed hidden">
+      <h2>My Profile</h2>
+      <h3 id="profileName"></h3>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+// page switch
+function showSignup(){
+  loginPage.classList.add("hidden");
+  signupPage.classList.remove("hidden");
+}
+
+function showLogin(){
+  signupPage.classList.add("hidden");
+  loginPage.classList.remove("hidden");
+}
+
+function showFeed(){
+  feedPage.classList.remove("hidden");
+  profilePage.classList.add("hidden");
+}
+
+function showProfile(){
+  feedPage.classList.add("hidden");
+  profilePage.classList.remove("hidden");
+}
+
+// signup
+function signup(){
+  let u = newUser.value;
+  let p = newPass.value;
+
+  localStorage.setItem("user", u);
+  localStorage.setItem("pass", p);
+
+  alert("Account created 😄");
+  showLogin();
+}
+
+// login
+function login(){
+  let u = loginUser.value;
+  let p = loginPass.value;
+
+  let su = localStorage.getItem("user");
+  let sp = localStorage.getItem("pass");
+
+  if(u === su && p === sp){
+    localStorage.setItem("login", "true");
+    openApp();
+  } else {
+    alert("Wrong login ❌");
+  }
+}
+
+// open app
+function openApp(){
+  loginPage.classList.add("hidden");
+  signupPage.classList.add("hidden");
+  mainPage.classList.remove("hidden");
+
+  profileName.innerText = localStorage.getItem("user");
+  loadPosts();
+}
+
+// logout
+function logout(){
+  localStorage.removeItem("login");
+  location.reload();
+}
+
+// post
+function addPost(){
+  let text = postText.value;
+  let img = imgUrl.value;
+
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+  posts.push({text, img, likes:0});
+
+  localStorage.setItem("posts", JSON.stringify(posts));
+
+  loadPosts();
+}
+
+// load post
+function loadPosts(){
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+  postsDiv = document.getElementById("posts");
+
+  postsDiv.innerHTML = "";
+
+  posts.forEach((p,i)=>{
+    postsDiv.innerHTML += `
+      <div class="post">
+        <p>${p.text}</p>
+        <img src="${p.img}">
+        <button onclick="likePost(${i})">❤️ ${p.likes}</button>
+      </div>
+    `;
+  });
+}
+
+// like
+function likePost(i){
+  let posts = JSON.parse(localStorage.getItem("posts"));
+  posts[i].likes++;
+  localStorage.setItem("posts", JSON.stringify(posts));
+  loadPosts();
+}
+
+// auto login
+if(localStorage.getItem("login") === "true"){
+  openApp();
+}
+
+</script>
+
+</body>
+</html>
